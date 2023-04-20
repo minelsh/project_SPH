@@ -8,8 +8,11 @@
             <p>尚品汇欢迎您！</p>
             <p>
               <span>请</span>
-              <a href="###">登录</a>
-              <a href="###" class="register">免费注册</a>
+              <!-- 声明式导航,与to属性连接 -->
+              <router-link to="/login">登录</router-link>
+              <router-link class="register" to="/register"
+                >免费注册</router-link
+              >
             </p>
           </div>
           <div class="typeList">
@@ -27,9 +30,9 @@
       <!--头部第二行 搜索区域-->
       <div class="bottom">
         <h1 class="logoArea">
-          <a class="logo" title="尚品汇" href="###" target="_blank">
+          <router-link class="logo" to="/home">
             <img src="./image/logo.png" alt="" />
-          </a>
+          </router-link>
         </h1>
         <div class="searchArea">
           <form action="###" class="searchForm">
@@ -37,8 +40,14 @@
               type="text"
               id="autocomplete"
               class="input-error input-xxlarge"
+              v-model="keyword"
+              @keyup.enter="goSeach"
             />
-            <button class="sui-btn btn-xlarge btn-danger" type="button">
+            <button
+              class="sui-btn btn-xlarge btn-danger"
+              type="button"
+              @click="goSeach"
+            >
               搜索
             </button>
           </form>
@@ -49,7 +58,48 @@
 </template>
 
 <script>
-export default {};
+export default {
+  name: "Header",
+  data() {
+    return {
+      keyword: "",
+    };
+  },
+  methods: {
+    goSeach() {
+      //路由传递参数
+      //第一种：字符串
+      // this.$router.push(
+      //   "/search/" + this.keyword + "?k=" + this.keyword.toUpperCase()
+      // );
+
+      //第二种：模板字符串
+      // this.$router.push(
+      //   `/search/${this.keyword}?k=${this.keyword.toUpperCase()}`
+      // );
+
+      //第三种：对象写法
+      this.$router.push(
+        {
+          name: "search",
+          params: { keyword: this.keyword },
+          query: { k: this.keyword.toUpperCase() },
+        }
+      );
+
+      /*
+        1.路由传递参数(对象写法)path是否可以结合params参数一起使用？
+	        答：不可以。对象传参是可以用name和path形式，但是params需要和name一起使用
+	      2.如何指定params参数可传可不传？：比如配置路由的时候，已经占位了(params参数)，但是路由跳转的时候就不传递，路径会出现问题
+	        答：在配置路由的时候，在占位的后面加上一个问号【params可以传递可以不传递】
+	      3.params参数可以传递也可以不传递，但是如果传递的是空串，如何解决？：params传递空串，当前组件的路径缺少
+	        答：使用undefined解决，eg：keyword:' ' || undefined
+	      4.路由组件能不能传递props数据?
+	        答：可以，三种写法。见router和Search
+      */
+    },
+  },
+};
 </script>
 
 <style lang="less" scoped>

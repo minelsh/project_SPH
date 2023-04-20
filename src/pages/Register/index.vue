@@ -1,15 +1,12 @@
 <template>
-    <div>
-      我是注册
-    </div>
-  </template>
+  <div>我是注册</div>
+</template>
   
   <script>
-  export default {
-  
-  }
-  </script>
+export default {
+  name: "Register",
+};
+</script>
   
   <style>
-  
-  </style>
+</style>
