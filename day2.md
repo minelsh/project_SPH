@@ -76,3 +76,8 @@ search:{a:1},
 pay:{},
 .....
 }
+
+9.完成 TypeNav 三级联动展示数据业务 1.先 axios 二次封装 2.因为这个三级表单展示在 home 中，所以在 home 的 store 仓库里写好向服务器请求数据（actions），actions 请求好之后用 commit 向 mutations 发起修改请求。 3.在 TypeNav 的 index.vue 里面去使用，先引入 mapState。用它来获取返回数据。再在模板中用插值语法去显示
+
+数据设计:一级分类中有 child 二级分类，二级又有三级
+[{id:1,name:'电子书',child:[{id:2,nmae:'喜羊羊',child:[{id:3,name:'哈哈'}]}]}]

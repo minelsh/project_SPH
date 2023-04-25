@@ -67,7 +67,7 @@ export default {
   },
   methods: {
     goSeach() {
-      //路由传递参数
+      //路由传递参数:编程式路由导航
       //第一种：字符串
       // this.$router.push(
       //   "/search/" + this.keyword + "?k=" + this.keyword.toUpperCase()
@@ -78,15 +78,15 @@ export default {
       //   `/search/${this.keyword}?k=${this.keyword.toUpperCase()}`
       // );
 
-      //第三种：对象写法
-      this.$router.push(
-        {
+      //第三种：对象写法。参数合并：如果有query参数也带上
+      if (this.$route.query) {
+        let location = {
           name: "search",
-          params: { keyword: this.keyword },
-          query: { k: this.keyword.toUpperCase() },
-        }
-      );
-
+          params: { keyword: this.keyword || undefined },
+        };
+        location.query = this.$route.query;
+        this.$router.push(location);
+      }
       /*
         1.路由传递参数(对象写法)path是否可以结合params参数一起使用？
 	        答：不可以。对象传参是可以用name和path形式，但是params需要和name一起使用

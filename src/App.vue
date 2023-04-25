@@ -17,6 +17,11 @@ export default {
     Header,
     Footer,
   },
+  mounted() {
+    //通知Vuex发请求，派发一个action||获取商品分类的三级列表数据
+    this.$store.dispatch("categoryList");
+    //原本在TypeNav中请求，因为每次刷新页面mounted都走一次都会请求一次，为了优化只请求一次，就放在了这里
+  },
 };
 </script>
 
