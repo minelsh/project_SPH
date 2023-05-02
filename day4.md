@@ -18,3 +18,25 @@
     5.合并路由传递参数（我们用的编程式导航传参 $router.push() 方法。
     因为我们设定的，搜索栏传递的是params参数，三级菜单传递的是query参数。参数是分开的。
     但是如果我们在搜索栏搜索出来的页面中点击三级菜单，参数就只会有一个query或者params。这样不行，所以我们在TypeNav和Header里都做了合并参数处理
+
+二、Mock：开发 home 首页轮播图精灵图(ListContainer 组件) 和 家用电器列表(Floor 组件)
+
+注意：mock 不会真的发请求，它只会在浏览器中自己使用，不会发请求给数据库。它的请求操作流程和 ajax 几乎一样
+
+    1.服务器返回的数据（接口）只有商品分类菜单的数据。对于这两个组件是没有的。
+    所以我们需要用mock数据
+
+    2.mock使用步骤：
+    1）在src文件夹中创建mock文件夹
+    2）准备JSON数据(在mock文件夹中创建json文件)
+    注意：把图片放进public里面，因为打包的时候public生成dist文件会原封不动
+    3）开始mock虚拟，通过mock实现（创建mockServe.js，通过mockjs插件模拟数据
+    4）把mockServer.js文件在入口文件中引入（至少要执行一次，才能模拟数据）
+    5）day1笔记中的ajax请求流程
+
+三、swiper 使用：轮播图
+
+    第一步：引如swiper样式（JS|CSS）：因为很多地方都可以用到这个轮播图，所以在main.js中引入，而且引入的样式直接写import 'swiper/css/swiper.css'。样式是这样的
+    第二步：需要的页面引入swiper包
+    第三步：页面中的结构一定要有
+    第四步：new Swiper实例【轮播图添加动态效果】

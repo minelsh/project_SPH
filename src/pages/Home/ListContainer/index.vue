@@ -4,28 +4,7 @@
     <div class="sortList clearfix">
       <div class="center">
         <!--banner轮播-->
-        <div class="swiper-container" id="mySwiper">
-          <div class="swiper-wrapper">
-            <div class="swiper-slide">
-              <img src="./image/banner1.jpg" />
-            </div>
-            <!-- <div class="swiper-slide">
-              <img src="./image/banner2.jpg" />
-            </div>
-            <div class="swiper-slide">
-              <img src="./image/banner3.jpg" />
-            </div>
-            <div class="swiper-slide">
-              <img src="./image/banner4.jpg" />
-            </div> -->
-          </div>
-          <!-- 如果需要分页器 -->
-          <div class="swiper-pagination"></div>
-
-          <!-- 如果需要导航按钮 -->
-          <div class="swiper-button-prev"></div>
-          <div class="swiper-button-next"></div>
-        </div>
+        <Carousel :list="bannerList" />
       </div>
       <div class="right">
         <div class="news">
@@ -101,8 +80,26 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
   name: "ListContainer",
+  mounted() {
+    //mounted表示挂载完毕，正常的DOM结构已经有了
+    //派发action：通过Vuex发起ajax请求，将数据存储到仓库中
+    this.$store.dispatch("getBannerList");
+
+    //在new Swpier实例之前，页面结构必须要有
+    //我们放在mounted中发现不可以。说明页面结构还没有完成，因为v-for是从服务器请求的异步
+    //所以解决方案：1.用updata(){ xx } 缺点是如果有data数据修改又会调用，不好   2.添加一个定时器，最后去创建swiper。但是小球点不了了
+  },
+  computed: {
+    ...mapState({
+      bannerList: (state) => {
+        return state.home.bannerList;
+      },
+    }),
+  },
 };
 </script>
 

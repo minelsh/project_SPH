@@ -91,6 +91,7 @@ export default {
   },
   //组件挂载完毕，可以向服务器发请求
   mounted() {
+    //派发action：通知Vuex发起ajax请求，将数据存储到仓库中
     //this.$store.dispatch("categoryList"); //放到App里面了，为了防止每次刷新都请求
 
     //当组件挂载完毕，让show属性变为false

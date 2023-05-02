@@ -92,3 +92,17 @@ params 参数：属于路径当作的一部分，需要注意的是，在配置�
 对象（常用）三种写法。当用对象写法的时候需要给 routes 命名
 
 query 参数：不属于路径当中的一部分，类似于 ajax 中的 queryString /home?k=v&v=k,不需要占位
+
+八、向数据库发起 ajax 请求。
+
+    1）在api中写好axios封装
+
+    2）在api中的index.js中引入axios的封装和使用函数(函数中要写请求的地址)：这里是真正的请求url
+
+    3）vuex的action请求方法书写在store里面，action里的每一个请求数据方法需要调用到api的index里面的使用函数获取请求的url（store中的三连环书写，state和mutations和actions按照我里面写的来就行）
+
+    4）在需要请求的组件中派发action，向vuex发起ajax请求，将数据存储到仓库中：this.$store.dispatch('action中的请求(第三步中的action方法)')
+
+    5）至此vuex仓库中已经有数据了，现在需要在组件上展示。
+
+    6）在组件中的计算属性里使用...mapState才行（见TypeNav流程即可）
