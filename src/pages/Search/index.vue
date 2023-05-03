@@ -82,9 +82,10 @@
               <li class="yui3-u-1-5" v-for="good in goodsList" :key="good.id">
                 <div class="list-wrap">
                   <div class="p-img">
-                    <a href="item.html" target="_blank">
+                    <!-- 路由跳转的时候别忘记带ID -->
+                    <router-link :to="`/detail/${good.id}`">
                       <img :src="good.defaultImg" />
-                    </a>
+                    </router-link>
                   </div>
                   <div class="price">
                     <strong>
@@ -119,7 +120,13 @@
             </ul>
           </div>
           <!-- 分页器 -->
-          <Pagination :pageNo="1" :pageSize="3" :total="91" :continues="7" />
+          <Pagination
+            :pageNo="searchParams.pageNo"
+            :pageSize="searchParams.pageSize"
+            :total="total"
+            :continues="5"
+            @getpageNo="getpageNo"
+          />
         </div>
       </div>
     </div>
@@ -129,7 +136,7 @@
 <script>
 //引入子组件：商品上面的品牌大小那些选择框
 import SearchSelector from "./SearchSelector/SearchSelector";
-import { mapGetters } from "vuex";
+import { mapGetters, mapState } from "vuex";
 
 export default {
   name: "Search",
@@ -255,6 +262,14 @@ export default {
       //再次发请求
       this.getData();
     },
+    //自定义事件：子传父------获取当前点击的页数（也可以用$bus）
+    getpageNo(pageNo) {
+      // console.log(pageNo);
+      //整理参数带给服务器
+      this.searchParams.pageNo = pageNo;
+      //再次发请求
+      this.getData();
+    },
   },
   computed: {
     //Getters是不分模块的，可以直接捞。而State是分模块home或者search的
@@ -273,6 +288,8 @@ export default {
       //降序，向下
       return this.searchParams.order.indexOf("desc") != -1;
     },
+    //获取search模块提供展示产品一共有多少数据total(不知道为什么用matState要报错)
+    ...mapGetters(["total"]),
   },
   //为了可以多次发请求，需要监听数据里的路由。因为每次修改搜索关键词，路由带参都会发生变化
   //数据监听：监听组件实例身上的属性的属性值变化

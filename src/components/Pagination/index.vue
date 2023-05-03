@@ -1,20 +1,44 @@
 <template>
   <div class="pagination">
-    <button>上一页</button>
-    <button>···</button>
+    <button :disabled="pageNo == 1" @click="$emit('getpageNo', pageNo - 1)">
+      上一页
+    </button>
+    <button
+      v-if="starNumAndEndNum.start > 1"
+      @click="$emit('getpageNo', 1)"
+      :class="{ active: pageNo == 1 }"
+    >
+      1
+    </button>
+    <button v-if="starNumAndEndNum.start > 2">···</button>
 
-    <button>3</button>
-    <button>4</button>
-    <button>5</button>
-    <button>6</button>
-    <button>7</button>
+    <!-- 中间连续部分：1.遍历完展示完1-end页的所有。2.隐藏小于start页之前的（成功展示start-end） -->
+    <button
+      v-for="(page, index) in starNumAndEndNum.end"
+      :key="index"
+      v-show="page >= starNumAndEndNum.start"
+      @click="$emit('getpageNo', page)"
+      :class="{ active: pageNo == page }"
+    >
+      {{ page }}
+    </button>
 
-    <button>···</button>
-    <button>{{ totalPage }}</button>
-    <button>下一页</button>
+    <button v-if="starNumAndEndNum.end < totalPage - 1">···</button>
+    <button
+      v-if="starNumAndEndNum.end < totalPage"
+      @click="$emit('getpageNo', totalPage)"
+      :class="{ active: pageNo == totalPage }"
+    >
+      {{ totalPage }}
+    </button>
+    <button
+      :disabled="pageNo == totalPage"
+      @click="$emit('getpageNo', pageNo + 1)"
+    >
+      下一页
+    </button>
 
     <button style="margin-left: 30px">共 {{ total }} 条</button>
-    <h1>{{ starNumAndEndNum }}</h1>
   </div>
 </template>
   
@@ -87,7 +111,7 @@ export default {
 
     &.active {
       cursor: not-allowed;
-      background-color: #409eff;
+      background-color: pink;
       color: #fff;
     }
   }

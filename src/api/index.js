@@ -12,12 +12,12 @@ export const reqCategoryList=()=>{
     })
 }
 
-
 //mock
 //获取banner(Home首页轮播图接口)
 export const reqGetBannerList=()=>mockRequest.get('/banner')
 //获取floor数据
 export const reqFloorList=()=>mockRequest.get('/floor')
+
 
 
 //获取搜索接口 地址：/api/list  请求方式：post   需要带参数
@@ -27,5 +27,13 @@ export const reqGetSearchInfo=(params)=>{
         method:'post',
         url:'/list',
         data:params
+    })
+}
+
+//获取产品详情页面的接口  URL：/api/item/{skuId}  请求方式:GET
+export const reqGoodsInfo=(skuId)=>{
+    return request({
+        url:`/item/${skuId}`,
+        method:'get'
     })
 }

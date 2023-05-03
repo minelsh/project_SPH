@@ -2,13 +2,11 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 
+//引入路由信息
+import routes from "./routes";
+
 //使用插件
 Vue.use(VueRouter)
-//引入路由组件
-import Home from '@/pages/Home'
-import Login from '@/pages/Login'
-import Register from '@/pages/Register'
-import Search from '@/pages/Search'
 
 //先把VueRouter原型对象的push，先保存一份(备份)
 let originPush=VueRouter.prototype.push;
@@ -40,49 +38,9 @@ VueRouter.prototype.replace=function(location,resolve,reject){
 //配置路由
 export default new VueRouter({
     //配置路由
-    routes:[
-        {
-            path:'/home',
-            name:'home',
-            component:Home,
-            meta:{
-                showFoot:true
-            }
-        },
-        {
-            path:'/login',
-            name:'login',
-            component:Login,
-            meta:{
-                showFoot:false
-            }
-        },
-        {
-            path:'/register',
-            name:'register',
-            component:Register,
-            meta:{
-                showFoot:false
-            }
-        },
-        {
-            path:'/search/:keyword?',
-            name:'search',
-            component:Search,
-            meta:{
-                showFoot:true
-            },
-
-            //路由组件能不能传递props数据
-            //第一种，布尔值写法
-            // props:true
-            //第二种，对象写法:额外给路由组件传递一些props
-            // props:{a:1,b:2}
-            //第三章：函数写法：可以params参数、query参数，通过props传递给路由组件
-            props:($route)=>{
-                return {keyword:$route.params.keyword,
-                k:$route.query.k}
-            }
-        },
-    ]
-})
+    routes,
+    //滚动行为：路由跳转之后，让新页面滚动到最顶部开始显示
+    scrollBehavior(to,from,savedPosition){
+        return{x:0,y:0}//x=0代表水平中间显示，y=0代表垂直方向最顶部
+    }
+});
