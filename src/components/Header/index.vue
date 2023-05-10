@@ -6,7 +6,8 @@
         <div class="container">
           <div class="loginList">
             <p>尚品汇欢迎您！</p>
-            <p>
+            <!-- 未登录，显示 -->
+            <p v-if="!userName">
               <span>请</span>
               <!-- 声明式导航,与to属性连接 -->
               <router-link to="/login">登录</router-link>
@@ -14,10 +15,15 @@
                 >免费注册</router-link
               >
             </p>
+            <!-- 登录 -->
+            <p v-else>
+              <a href="#">{{ userName }}</a>
+              <a href="#" class="register" @click="logout">退出登录</a>
+            </p>
           </div>
           <div class="typeList">
             <a href="###">我的订单</a>
-            <a href="###">我的购物车</a>
+            <router-link to="/shopcart">我的购物车</router-link>
             <a href="###">我的尚品汇</a>
             <a href="###">尚品汇会员</a>
             <a href="###">企业采购</a>
@@ -98,12 +104,30 @@ export default {
 	        答：可以，三种写法。见router和Search
       */
     },
+    //退出登录
+    async logout() {
+      //退出需要做的事情：
+      //1.发请求，通知服务器退出登录【清除一些数据：token】
+      //2.清除项目中的数据【userInfo，token】
+      try {
+        //如果退出成功
+        this.$store.dispatch("userLogout");
+        //退出到登录页
+        this.$router.push("/login");
+      } catch (error) {}
+    },
   },
   mounted() {
     //通过全局事件总线清除关键字
     this.$bus.$on("clear", () => {
       this.keyword = "";
     });
+  },
+  computed: {
+    //用户名信息
+    userName() {
+      return this.$store.state.user.userInfo.name;
+    },
   },
 };
 </script>

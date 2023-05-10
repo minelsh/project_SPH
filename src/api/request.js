@@ -6,6 +6,8 @@ import nprogress from "nprogress";
 import 'nprogress/nprogress.css'
 //nprogress中 start：进度条开始   done：进度条结束
 
+//在当前模块中引入store
+import store from '@/store'
 
 //1.利用axios对象的方法create，去创建一个axios实例
 //2.request其实就是axios，只不过稍微配置一下
@@ -21,6 +23,15 @@ request.interceptors.request.use((config)=>{
     //进度条开始动
     nprogress.start()
 
+    if(store.state.detail.uuid_token){
+        //给请求头添加一个字段(userTempId)
+        config.headers.userTempId=store.state.detail.uuid_token
+    }
+    
+    //需要携带token带给服务器
+    if(store.state.user.token){
+        config.headers.token = store.state.user.token;
+    }
     //config:配置对象，里面有一个属性很重要，headers请求头
     return config
 })
@@ -31,12 +42,13 @@ request.interceptors.response.use((res)=>{
     nprogress.done()
 
     //成功的回调，服务器响应数据回来以后，拦截器可以检测到，可以做一些事情
-    return res.data
-},(error)=>{
-    console.log(error)
-    // 终止promise
-    return Promise.reject(new Error('faile'))
-})
+    return res.data;
+}, (err) => {
+    //温馨提示:某一天发请求,请求失败,请求失败的信息打印出来
+    alert(err.message);
+    //终止Promise链
+    return new Promise();
+});
 
 //对外暴露
 export default request

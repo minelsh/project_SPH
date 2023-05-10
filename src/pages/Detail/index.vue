@@ -4,32 +4,27 @@
     <TypeNav />
 
     <!-- 主要内容区域 -->
-    <section class="con"> 
+    <section class="con">
       <!-- 导航路径区域 -->
       <div class="conPoin">
-        <span>手机、数码、通讯</span>
-        <span>手机</span>
-        <span>Apple苹果</span>
-        <span>iphone 6S系类</span>
+        <span>{{ categoryView.category1Name }}</span>
+        <span>{{ categoryView.category2Name }}</span>
+        <span>{{ categoryView.category3Name }}</span>
       </div>
       <!-- 主要内容区域 -->
       <div class="mainCon">
         <!-- 左侧放大镜区域 -->
         <div class="previewWrap">
           <!--放大镜效果-->
-          <Zoom />
+          <Zoom :skuImageList="skuImageList" />
           <!-- 小图列表 -->
-          <ImageList />
+          <ImageList :skuImageList="skuImageList" />
         </div>
         <!-- 右侧选择区域布局 -->
         <div class="InfoWrap">
           <div class="goodsDetail">
-            <h3 class="InfoName">
-              Apple iPhone 6s（A1700）64G玫瑰金色 移动通信电信4G手机
-            </h3>
-            <p class="news">
-              推荐选择下方[移动优惠购],手机套餐齐搞定,不用换号,每月还有花费返
-            </p>
+            <h3 class="InfoName">{{ skuInfo.skuName }}</h3>
+            <p class="news">{{ skuInfo.skuDesc }}</p>
             <div class="priceArea">
               <div class="priceArea1">
                 <div class="title">
@@ -37,7 +32,7 @@
                 </div>
                 <div class="price">
                   <i>¥</i>
-                  <em>5299</em>
+                  <em>{{ skuInfo.price }}</em>
                   <span>降价通知</span>
                 </div>
                 <div class="remark">
@@ -76,11 +71,21 @@
           <div class="choose">
             <div class="chooseArea">
               <div class="choosed"></div>
-              <dl>
-                <dt class="title">选择颜色</dt>
-                <dd changepirce="0" class="active">金色</dd>
-                <dd changepirce="40">银色</dd>
-                <dd changepirce="90">黑色</dd>
+              <!-- 这里是商品售卖属性 -->
+              <dl v-for="saleAttr in spuSaleAttrList" :key="saleAttr.id">
+                <dt class="title">{{ saleAttr.saleAttrName }}</dt>
+                <!--每一个销售属性的属性值的地方-->
+                <dd
+                  changepirce="0"
+                  :class="{ active: saleAttrValue.isChecked == 1 }"
+                  v-for="saleAttrValue in saleAttr.spuSaleAttrValueList"
+                  :key="saleAttrValue.id"
+                  @click="
+                    changeChecked(saleAttrValue, saleAttr.spuSaleAttrValueList)
+                  "
+                >
+                  {{ saleAttrValue.saleAttrValueName }}
+                </dd>
               </dl>
               <dl>
                 <dt class="title">内存容量</dt>
@@ -103,12 +108,25 @@
             </div>
             <div class="cartWrap">
               <div class="controls">
-                <input autocomplete="off" class="itxt" />
-                <a href="javascript:" class="plus">+</a>
-                <a href="javascript:" class="mins">-</a>
+                <input
+                  autocomplete="off"
+                  class="itxt"
+                  v-model="skuNum"
+                  @change="changeSkuNum"
+                />
+                <a href="javascript:" class="plus" @click="skuNum++">+</a>
+                <a
+                  href="javascript:"
+                  class="mins"
+                  @click="skuNum <= 1 ? (skuNum = 1) : skuNum--"
+                  >-</a
+                >
               </div>
               <div class="add">
-                <a href="javascript:">加入购物车</a>
+                <!-- 以前我们的路由跳转，就是从A路由跳转到B路由。这里的跳转，再加入购物车进行路由跳转之前，还发了请求
+                  把你购买的产品的信息通过请求的形式通知服务器，服务器进行相应的存储
+                -->
+                <a @click="addOrUpdateCart">加入购物车</a>
               </div>
             </div>
           </div>
@@ -349,10 +367,15 @@
 <script>
 import ImageList from "./ImageList/ImageList";
 import Zoom from "./Zoom/Zoom";
-
+import { mapGetters } from "vuex";
 export default {
   name: "Detail",
-
+  data() {
+    return {
+      //购买产品的个数
+      skuNum: 1,
+    };
+  },
   components: {
     ImageList,
     Zoom,
@@ -360,6 +383,67 @@ export default {
   mounted() {
     //派发action获取产品详情信息
     this.$store.dispatch("getGoodInfo", this.$route.params.skuid);
+  },
+  computed: {
+    ...mapGetters(["categoryView", "skuInfo", "spuSaleAttrList"]),
+    //给子组件的数据，跟之前一样，gooInfo是个空对象，里面的skuImageList属性是undefined会报错
+    skuImageList() {
+      return this.skuInfo.skuImageList || [];
+    },
+  },
+  methods: {
+    //产品的售卖属性值切换高亮。带两个参数：前一个是点击的售卖属性的属性值(白色)，第二个是点击售卖属性的属性（颜色(是个数组，旗下两个对象：一个白色一个粉色)）
+    changeChecked(saleAttrValue, arr) {
+      // console.log(this.skuInfo);
+      arr.forEach((item) => {
+        item.isChecked = "0";
+      });
+      saleAttrValue.isChecked = "1";
+    },
+
+    //表单元素修改产品个数
+    changeSkuNum(event) {
+      //判断并使用户输入的数据合法（大于等于1的整数）
+      //如果用户输入的不是number类型：乘1后会变成NaN
+      let value = event.target.value * 1;
+      if (isNaN(value) || value < 1) {
+        this.skuNum = 1;
+      } else {
+        //正常:大于等于1的数字（要排除小数，用parseInt向下取整）
+        this.skuNum = parseInt(value);
+      }
+    },
+
+    //加入购物车的回调函数：我们希望自己在这里进行成功与失败的请求，而不用vuex仓库
+    async addOrUpdateCart() {
+      //点击这个按钮的时候，做的第一件事情，将参数带给服务器（发请求），通知服务器加入购物车
+      //现在很尴尬的事情就是，只有vuex仓库知道返回的成功与否，这个组件需要知道添加购物车是否成功，然后跳转路由到购物车页面-----所以使用了async和await去获取成功的信息：
+      //这里await意思：等待着仓库那边promise成功的回调，原本(不加await)组件得到的只是一个promise对象，加了之后，就可以得到仓库那边promise成功return的  "加入购物车成功”  的字符串
+      /* 这里调用了addOrUpdateCart的action请求，返回的是一个Promise（成功或者失败），我们这里调用了这个方法获取到的也是一个promise对象。
+      组件需要知道加入购物车是否成功以此跳转路由，所以用async和await去获取得到的promise对象得到成功与失败的回调
+      当前这里派发一个action，也向服务器发请求，判断加入购物车是成功还是失败了，进行相应的操作 */
+
+      try {
+        //成功了
+        await this.$store.dispatch("addOrUpdateCart", {
+          skuId: this.$route.params.skuid,
+          skuNum: this.skuNum,
+        });
+        console.log("加入购物车成功");
+        //路由跳转
+        //进行路由跳转的时候还需要把产品的信息带给下一级的路由组件(不需要再发请求：因为这个组件已经拿到了产品信息了)
+        //一些简单的数据skuNum，通过query形式传递
+        //一些比较复杂的数据skuInfo：通过会话存储（sessionStorage）
+        this.$router.push({
+          name: "addcartsuccess",
+          query: { skuNum: this.skuNum },
+        });
+        sessionStorage.setItem("SKUINFO", JSON.stringify(this.skuInfo));
+      } catch (error) {
+        //失败
+        alert(error.message);
+      }
+    },
   },
 };
 </script>
